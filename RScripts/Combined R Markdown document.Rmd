@@ -3,10 +3,15 @@ title: "Combined R Markdown document"
 author: "B210741"
 date: "18/06/2022"
 output:
-  pdf_document: default
   html_document: default
+  word_document: default
+  pdf_document: default
 ---
+```{r setup, include=FALSE}
 
+knitr::opts_chunk$set(echo = TRUE)
+
+```
 ## 1. Link to Github repository:
 https://github.com/B210741/B210741_assessment.git
 
@@ -297,13 +302,24 @@ print(linker)
 Using the build_dict() function from the dataMeta to constructs a data dictionary for a CollectedData data frame with the aid of the linker data frame between. 
 
 ```{r}
-dictionary <- build_dict(my.data = CollectedData, linker = linker)
-
+#dictionary <- build_dict(my.data = CollectedData, linker = linker)
+dictionary <- build_dict(my.data = CollectedData, linker = linker, option_description = NULL, 
+prompt_varopts = FALSE)
 glimpse(dictionary)
 
+dictionary[6,4]<-"C82010: Prescribing Cost Centre - OAKHAM MEDICAL PRACTICE."
 dictionary[7,4]<-"RDZ: NHS Trust - The Royal Bournemouth and Christchurch Hospitals NHS Foundation Trust."
-
+dictionary[8,4]<-"RVR: NHS Trust - EPSOM AND ST HELIER UNIVERSITY HOSPITALS NHS TRUST."
+dictionary[9,4]<-"RQM: NHS Trust - CHELSEA AND WESTMINSTER HOSPITAL NHS FOUNDATION TRUST."
+dictionary[10,4]<-"R1F: NHS Trust - ISLE OF WIGHT NHS TRUST."
+dictionary[11,4]<-"RE9: NHS Trust - SOUTH TYNESIDE NHS FOUNDATION TRUST."
+dictionary[12,4]<-"RNL: NHS Trust - NORTH CUMBRIA UNIVERSITY HOSPITALS NHS TRUST."
+dictionary[13,4]<-"RJ1 - NHS Trust - GUY'S AND ST THOMAS' NHS FOUNDATION TRUST."
+dictionary[14,4]<-"RKB - NHS Trust - UNIVERSITY HOSPITALS COVENTRY AND WARWICKSHIRE NHS TRUST."
+dictionary[15,4]<-"NLO12 - Independent Sector H/c Provider Site - OAKHAM URGENT CARE CENTRE."
 dictionary[27,4] <-"other: Other types of A&E/minor injury activity with designated accommodation for the reception of accident and emergency patients."
+dictionary[28,4] <-"1: Emergency departments are a consultant-led 24-hour service with full resuscitation facilities and designated accommodation for the reception of accident and emergency patients."
+dictionary[29,4] <-"2: Consultant-led mono speciality accident and emergency service (e.g. ophthalmology, dental) with designated accommodation for the reception of patients."
 ```
 #### Save the data dictionary for CollectedData to the 'RawData' folder
 ```{r}
@@ -340,9 +356,6 @@ complete_CollectedData<-readRDS(here("RawData", "complete_CollectedData.rds"))
 ## 4. Data capture tool: Colleting data using interactive Jupyter widgets
 
 *Description of the code: 
-
-  -Language (Python) in Jupyter
-  
-  -The data is collected using interactive widgets
-  
-  -The data is stored in the RawData folder
+Language (Python) in Jupyter
+The data is collected using interactive widgets
+The data is stored in the RawData folder
