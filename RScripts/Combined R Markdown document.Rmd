@@ -1,11 +1,11 @@
 ---
-title: "Combined R Markdown document"
-author: "B210741"
-date: "18/06/2022"
-output:
-  html_document: default
-  word_document: default
-  pdf_document: default
+
+### Title: '**Combined R Markdown document**'
+
+### Author: "B210741"
+
+### Date: "`r format (Sys.time (), '%d %B, %Y')`"
+
 ---
 ```{r setup, include=FALSE}
 
@@ -20,8 +20,7 @@ https://github.com/B210741/B210741_assessment.git
 
 ### Loading NHSRdatasets
 
-```{r}
-install.packages('dataMeta')
+```{r, message=FALSE,warning=FALSE}
 library(dataMeta)
 library(NHSRdatasets)
 library(tidyverse)
@@ -39,40 +38,23 @@ data(ae_attendances)
 
 The dataset set I have chosen to manage from the NHSRdatasets package is the NHS England accident and emergency (A&E) attendances and admissions (ae_attendances) data. The ae_attendances data includes reported attendances, four-hour breaches and admissions for all A&E departments in England for 2016/17 through 2018/19 (Apr-Mar). We previously selected a subset of the variables needed for my data capture tool, including period, attendances and breaches, and subsetted the data into test and training data.
 
-```{r}
+```{r, message=FALSE,warning=FALSE}
 data(ae_attendances)
 ae<-ae_attendances
 class(ae)
-#[1] "tbl_df"     "tbl"        "data.frame"
-
 ae
 
-## # A tibble: 12,765 × 6
-##    period     org_code type  attendances breaches admissions
-##    <date>     <fct>    <fct>       <dbl>    <dbl>      <dbl>
-##  1 2017-03-01 RF4      1           21289     2879       5060
-##  2 2017-03-01 RF4      2             813       22          0
-##  3 2017-03-01 RF4      other        2850        6          0
-##  4 2017-03-01 R1H      1           30210     5902       6943
-##  5 2017-03-01 R1H      2             807       11          0
-##  6 2017-03-01 R1H      other       11352      136          0
-##  7 2017-03-01 AD913    other        4381        2          0
-##  8 2017-03-01 RYX      other       19562      258          0
-##  9 2017-03-01 RQM      1           17414     2030       3597
-## 10 2017-03-01 RQM      other        7817       86          0
-## # … with 12,755 more rows
 ```
-```{r}
+
+```{r, message=FALSE,warning=FALSE}
 glimpse(ae)
 head(ae)
 tail(ae, n=4)
 
-# Missing value
+#There are no missing data. The data is complete.
 ae %>% 
   map(is.na) %>%
 map(sum)
-
-#There are no missing data. The data is complete.
 
 #Add an index link column to ae_attendances data 
 ae <- rowid_to_column(ae, "index")
@@ -88,8 +70,10 @@ ae %>%
   head(10) %>%
   # Format as a table
   kable()
+
 ```
-```{r}
+
+```{r, message=FALSE,warning=FALSE}
 #Calculate monthly four hour waiting time target performance for England as a whole
 
 ENG_performance <- ae %>%
@@ -98,7 +82,7 @@ ENG_performance <- ae %>%
   mutate(performance = 1 - breaches / attendances)
 glimpse(ENG_performance)
 ```
-```{r}
+```{r, message=FALSE,warning=FALSE}
 #Visualise monthly four hour waiting time target
 
 ggplot(ENG_performance, aes(period, performance)) +
@@ -110,8 +94,9 @@ ggplot(ENG_performance, aes(period, performance)) +
        y = "% of A&E attendances that met the four hour standard",
        title = "NHS England accident and emergency (A&E) four hour performance",
        caption = "Source: NHSRdatasets")
+
 ```
-```{r}
+```{r, message=FALSE,warning=FALSE}
 #Select the ae_attendances data subset for further exploratory analysis
 
 ae %>%
@@ -123,17 +108,19 @@ ae %>%
   head(10) %>%
   # format as a table
   kable()
+
 ```
-```{r}
+```{r, message=FALSE,warning=FALSE}
 #save provisional subsetted ae_attendances data to the ‘RawData’ folder
 
 write_csv(ae, here("RawData", "ae_attendances_ENG_4hr_perfom.csv"))
+
 ```
 #### Separating provisional ae_attendances_ENG_4hr_perfom data into training and testing sets
 
 Splint the raw data into test and training data sets
 
-```{r}
+```{r, message=FALSE,warning=FALSE}
 #The ae_attendances_ENG_4hr_perfom dataset is large
 nrow(ae) #rows of data
 #[1] 12765
@@ -151,20 +138,21 @@ trainIndex <- createDataPartition(ae$index, p = prop,
                                   list = FALSE, 
                                   times = 1)
 head(trainIndex)
-
 # All records that are in the trainIndex are assigned to the training data.
 
 aeTrain <- ae[ trainIndex,]
 nrow(aeTrain)
 #[1] 12753 records
+
 ```
-```{r}
+```{r, message=FALSE,warning=FALSE}
 CollectedData=read_csv(here("RawData", "CollectedDataAll.csv"))
 
 glimpse(CollectedData)
+
 ```
 #### Let's tabulate ae_attendances_ENG_4hr_perfom training data for your report
-```{r}
+```{r,message=FALSE,warning=FALSE}
 aeTrain %>%
   # set the period column to show in Month-Year format
   mutate_at(vars(period), format, "%b-%y") %>% 
@@ -176,26 +164,29 @@ aeTrain %>%
   kable()
 
 write_csv(aeTrain, here("Data", "ae_attendances_ENG_4hr_perfom_train.csv"))
+
 ```
 
 #### Let's extract the ae_attendances_ENG_4hr_perfom test data
 
-```{r}
+```{r, message=FALSE,warning=FALSE}
 #All records that are not in the trainIndex (`-trainIndex`) are assigned to the test data.
 aeTest  <- ae[-trainIndex,]
 nrow(aeTest)
 #[1] 12
+#There are 12 records in your test data
+
 ```
-There are 12 records in your test data
 
 #### Set aside the first record from the ae_attendances_ENG_4hr_perfom test data
 
-```{r}
+```{r, message=FALSE,warning=FALSE}
 aeTestMarker  <- aeTest[1,]
+
 ```
 #### Tabulate ae_attendances_ENG_4hr_perfom marker test data for the report
 
-```{r}
+```{r, message=FALSE,warning=FALSE}
 aeTestMarker  %>%
   # set the period column to show in Month-Year format
   mutate_at(vars(period), format, "%b-%y") %>% 
@@ -205,20 +196,23 @@ aeTestMarker  %>%
   head(10) %>%
   # format as a table
   kable()
+
 ```
 #### Save the ae_attendances_ENG_4hr_perfom marker test data to the working data folder 'Data'
 
-```{r}
+```{r, message=FALSE,warning=FALSE}
 write_csv(aeTestMarker, here("Data", "ae_attendances_ENG_4hr_perfom_test_marker.csv"))
 
 ```
 #### Setting aside the remaining records for testing data-capture tool.
 
-```{r}
+```{r, message=FALSE,warning=FALSE}
 aeTest  <- aeTest[2:nrow(aeTest),]
+
 ```
 #### Tabulate ae_attendances_ENG_4hr_perfom test data for the report
-```{r}
+
+```{r, message=FALSE,warning=FALSE}
 aeTest  %>%
   # set the period column to show in Month-Year format
   mutate_at(vars(period), format, "%b-%y") %>% 
@@ -228,10 +222,13 @@ aeTest  %>%
   head(10) %>%
   # format as a table
   kable()
+
 ```
 #### Save the ae_attendances_ENG_4hr_perfom test data to the working data folder 'Data'
-```{r}
+
+```{r, message=FALSE,warning=FALSE}
 write_csv(aeTest, here("Data", "ae_attendances_test.csv"))
+
 ```
 
 ### The CollectedData dataset contains:
@@ -240,7 +237,7 @@ write_csv(aeTest, here("Data", "ae_attendances_test.csv"))
 
 **period**: the month that this activity relates to, stored as a date (1st of each month).
 
-**org_code**: the Organisation data service (ODS) code for the organisation. The ODS code is a unique code created by the Organisation data service within NHS Digital and used to identify organisations across health and social care. ODS codes are required in order to gain access to national systems like NHSmail and the Data Security and Protection Toolkit. If you want to know the organisation associated with a particular ODS code, you can look it up from the following address: https://odsportal.digital.nhs.uk/Organisation/Search. For example, the organisation associated with the ODS code ‘AF003’ is Parkway health centre.
+**org_code**: the Organisation data service (ODS) code for the organisation.
 
 **type**: the Department Type for this activity, either
 
@@ -248,12 +245,13 @@ write_csv(aeTest, here("Data", "ae_attendances_test.csv"))
   
   *2: Consultant-led mono speciality accident and emergency service (e.g. ophthalmology, dental) with designated accommodation for the reception of patients, or
   
-  *other: Other types of A&E/minor injury activity with designated accommodation for the reception of accident and emergency patients. The department may be doctor-led or nurse-led and treats at least minor injuries and illnesses and can be routinely accessed without an appointment. A service mainly or entirely appointment-based (for example, a GP Practice or Outpatient clinic) is excluded even though it may treat a number of patients with minor illness or injury. Excludes NHS walk-in centres.(National Health Service, 2020)
+  *other: Other types of A&E/minor injury activity with designated accommodation for the reception of accident and emergency patients. 
 
 **attendances**: the number of attendances for this department type at this organisation for this month.
-breaches: the number of attendances that breached the four-hour target.
 
-**admissions**: the number of attendances that resulted in an admission to the hospital.(Chris Mainey, 2021)
+**breaches**: the number of attendances that breached the four-hour target.
+
+**admissions**: the number of attendances that resulted in an admission to the hospital.
 
 **performance**: the performance ([1 - breaches]/attendances) calculated for the whole of England.
 
@@ -268,7 +266,7 @@ breaches: the number of attendances that breached the four-hour target.
 
 Create a string vector representing the different variable descriptions
 
-```{r}
+```{r, message=FALSE,warning=FALSE}
 variable_description <- c("The index column that allows us to link the data collected to the original ae_attendances data in the 'RawData' folder.",
 "The month that this activity relates to, stored as a date (1st of each month).",
 "The Organisation data service (ODS) code for the organisation. If you want to know the organisation associated with a particular ODS code, you can look it up from the following address: https://odsportal.digital.nhs.uk/Organisation/Search.", 
@@ -280,28 +278,32 @@ variable_description <- c("The index column that allows us to link the data coll
 "The consent from the end-user to process and share the data collected with the data capture tool.")
 
 print(variable_description)
+
 ```
 
 #### Variable types
-```{r}
+```{r, message=FALSE,warning=FALSE}
 glimpse(CollectedData)
+
 ```
 We have five quantitative values (measured values) variables and four fixed values (allowable values or codes) variables.
 
-```{r}
+```{r, message=FALSE,warning=FALSE}
+
 variable_type <- c(0, 1, 1, 1, 0, 0, 0, 0, 1)
 print(variable_type)
 
 linker<-build_linker(CollectedData, variable_description, variable_type)
 
 print(linker)
+
 ```
 
 ### Data dictionary
 
 Using the build_dict() function from the dataMeta to constructs a data dictionary for a CollectedData data frame with the aid of the linker data frame between. 
 
-```{r}
+```{r,message=FALSE,warning=FALSE}
 #dictionary <- build_dict(my.data = CollectedData, linker = linker)
 dictionary <- build_dict(my.data = CollectedData, linker = linker, option_description = NULL, 
 prompt_varopts = FALSE)
@@ -320,42 +322,50 @@ dictionary[15,4]<-"NLO12 - Independent Sector H/c Provider Site - OAKHAM URGENT 
 dictionary[27,4] <-"other: Other types of A&E/minor injury activity with designated accommodation for the reception of accident and emergency patients."
 dictionary[28,4] <-"1: Emergency departments are a consultant-led 24-hour service with full resuscitation facilities and designated accommodation for the reception of accident and emergency patients."
 dictionary[29,4] <-"2: Consultant-led mono speciality accident and emergency service (e.g. ophthalmology, dental) with designated accommodation for the reception of patients."
+
 ```
 #### Save the data dictionary for CollectedData to the 'RawData' folder
-```{r}
+
+```{r, message=FALSE,warning=FALSE}
 write_csv(dictionary, here("RawData", "CollectedData_DataDictionary.csv"))
 ```
-
 #### Incorporating attributes as metadata to the CollectedData as metadata using the ‘incorporate_attr()’ function from the dataMeta package.
-```{r}
+
+```{r, message=FALSE,warning=FALSE}
 main_string <- "This data describes the NHS England accident and emergency (A&E) attendances and breaches of four-hour wait time target data from the *NHSRdatasets* package collected by the data capture tool."
 
 main_string
-```
 
+```
 #### Incorporate attributes as metadata
 
 Using the ‘incorporate_attr()’ function to return an R dataset containing metadata stored in its attributes. The attributes we are going to add include: * a data dictionary * number of columns * number of rows * the name of the author who created the dictionary and added it, * the time when it was last edited * a brief description of the original dataset.
-```{r}
+
+```{r, message=FALSE,warning=FALSE}
 complete_CollectedData <- incorporate_attr(my.data = CollectedData, data.dictionary = dictionary,
 main_string = main_string)
 
 #Change the author name
-
 attributes(complete_CollectedData)$author[1]<-"B210741"
 complete_CollectedData
-attributes(complete_CollectedData)
 ```
+attributes(complete_CollectedData)
+
 #### Save the CollectedData with attributes
 
-```{r}
+```{r, message=FALSE,warning=FALSE}
 save_it(complete_CollectedData, here("RawData", "complete_CollectedData"))
 
 complete_CollectedData<-readRDS(here("RawData", "complete_CollectedData.rds"))
-```
-## 4. Data capture tool: Colleting data using interactive Jupyter widgets
 
-*Description of the code: 
-Language (Python) in Jupyter
-The data is collected using interactive widgets
-The data is stored in the RawData folder
+```
+## 4. Colleting data using interactive Jupyter widgets
+
+#### Description of the code:
+The data capture tool is created using Python coding language and interactive Jupyter widgets. Using the pandas package to import the data and setting an empty data frame to collect the data captured by the Jupyter widgets. Before any data is collected and saved, we need to ensure there is consent. 
+
+#### Description of the interactive widgets: 
+Boolean widgets for consent; DatePicker widget for Period variable; Selection widgets for Org_code variable; Radio buttons for Type variable; and Numeric widgets (IntText) for attendances and breaches variables.
+
+#### Storage and archive: 
+The data is stored in the RawData folder to follow best practice for archiving and storing data.
