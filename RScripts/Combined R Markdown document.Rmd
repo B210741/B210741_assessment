@@ -20,7 +20,7 @@ https://github.com/B210741/B210741_assessment.git
 
 ### Loading NHSRdatasets
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
 library(dataMeta)
 library(NHSRdatasets)
 library(tidyverse)
@@ -38,7 +38,7 @@ data(ae_attendances)
 
 The dataset set I have chosen to manage from the NHSRdatasets package is the NHS England accident and emergency (A&E) attendances and admissions (ae_attendances) data. The ae_attendances data includes reported attendances, four-hour breaches and admissions for all A&E departments in England for 2016/17 through 2018/19 (Apr-Mar). We previously selected a subset of the variables needed for my data capture tool, including period, attendances and breaches, and subsetted the data into test and training data.
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE,results="hide"}
 data(ae_attendances)
 ae<-ae_attendances
 class(ae)
@@ -46,7 +46,7 @@ ae
 
 ```
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE,results="hide"}
 glimpse(ae)
 head(ae)
 tail(ae, n=4)
@@ -73,7 +73,7 @@ ae %>%
 
 ```
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
 #Calculate monthly four hour waiting time target performance for England as a whole
 
 ENG_performance <- ae %>%
@@ -82,7 +82,7 @@ ENG_performance <- ae %>%
   mutate(performance = 1 - breaches / attendances)
 glimpse(ENG_performance)
 ```
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
 #Visualise monthly four hour waiting time target
 
 ggplot(ENG_performance, aes(period, performance)) +
@@ -96,7 +96,7 @@ ggplot(ENG_performance, aes(period, performance)) +
        caption = "Source: NHSRdatasets")
 
 ```
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE, echo=FALSE}
 #Select the ae_attendances data subset for further exploratory analysis
 
 ae %>%
@@ -110,7 +110,7 @@ ae %>%
   kable()
 
 ```
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE, echo=FALSE}
 #save provisional subsetted ae_attendances data to the ‘RawData’ folder
 
 write_csv(ae, here("RawData", "ae_attendances_ENG_4hr_perfom.csv"))
@@ -120,7 +120,7 @@ write_csv(ae, here("RawData", "ae_attendances_ENG_4hr_perfom.csv"))
 
 Splint the raw data into test and training data sets
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE, echo=FALSE, results="hide"}
 #The ae_attendances_ENG_4hr_perfom dataset is large
 nrow(ae) #rows of data
 #[1] 12765
@@ -145,14 +145,14 @@ nrow(aeTrain)
 #[1] 12753 records
 
 ```
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE, echo=FALSE, results="hide"}
 CollectedData=read_csv(here("RawData", "CollectedDataAll.csv"))
 
 glimpse(CollectedData)
 
 ```
 #### Let's tabulate ae_attendances_ENG_4hr_perfom training data for your report
-```{r,message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE, echo=FALSE}
 aeTrain %>%
   # set the period column to show in Month-Year format
   mutate_at(vars(period), format, "%b-%y") %>% 
@@ -169,7 +169,7 @@ write_csv(aeTrain, here("Data", "ae_attendances_ENG_4hr_perfom_train.csv"))
 
 #### Let's extract the ae_attendances_ENG_4hr_perfom test data
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE,results="hide"}
 #All records that are not in the trainIndex (`-trainIndex`) are assigned to the test data.
 aeTest  <- ae[-trainIndex,]
 nrow(aeTest)
@@ -180,13 +180,13 @@ nrow(aeTest)
 
 #### Set aside the first record from the ae_attendances_ENG_4hr_perfom test data
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
 aeTestMarker  <- aeTest[1,]
 
 ```
 #### Tabulate ae_attendances_ENG_4hr_perfom marker test data for the report
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE,results="hide"}
 aeTestMarker  %>%
   # set the period column to show in Month-Year format
   mutate_at(vars(period), format, "%b-%y") %>% 
@@ -200,19 +200,19 @@ aeTestMarker  %>%
 ```
 #### Save the ae_attendances_ENG_4hr_perfom marker test data to the working data folder 'Data'
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE,results="hide"}
 write_csv(aeTestMarker, here("Data", "ae_attendances_ENG_4hr_perfom_test_marker.csv"))
 
 ```
 #### Setting aside the remaining records for testing data-capture tool.
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE,results="hide"}
 aeTest  <- aeTest[2:nrow(aeTest),]
 
 ```
 #### Tabulate ae_attendances_ENG_4hr_perfom test data for the report
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
 aeTest  %>%
   # set the period column to show in Month-Year format
   mutate_at(vars(period), format, "%b-%y") %>% 
@@ -226,7 +226,7 @@ aeTest  %>%
 ```
 #### Save the ae_attendances_ENG_4hr_perfom test data to the working data folder 'Data'
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE,results="hide"}
 write_csv(aeTest, here("Data", "ae_attendances_test.csv"))
 
 ```
@@ -266,7 +266,7 @@ write_csv(aeTest, here("Data", "ae_attendances_test.csv"))
 
 Create a string vector representing the different variable descriptions
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE,results="hide"}
 variable_description <- c("The index column that allows us to link the data collected to the original ae_attendances data in the 'RawData' folder.",
 "The month that this activity relates to, stored as a date (1st of each month).",
 "The Organisation data service (ODS) code for the organisation. If you want to know the organisation associated with a particular ODS code, you can look it up from the following address: https://odsportal.digital.nhs.uk/Organisation/Search.", 
@@ -282,13 +282,13 @@ print(variable_description)
 ```
 
 #### Variable types
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
 glimpse(CollectedData)
 
 ```
 We have five quantitative values (measured values) variables and four fixed values (allowable values or codes) variables.
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE,results="hide"}
 
 variable_type <- c(0, 1, 1, 1, 0, 0, 0, 0, 1)
 print(variable_type)
@@ -303,7 +303,7 @@ print(linker)
 
 Using the build_dict() function from the dataMeta to constructs a data dictionary for a CollectedData data frame with the aid of the linker data frame between. 
 
-```{r,message=FALSE,warning=FALSE}
+```{r,message=FALSE,warning=FALSE,echo=FALSE,results="hide"}
 #dictionary <- build_dict(my.data = CollectedData, linker = linker)
 dictionary <- build_dict(my.data = CollectedData, linker = linker, option_description = NULL, 
 prompt_varopts = FALSE)
@@ -326,12 +326,12 @@ dictionary[29,4] <-"2: Consultant-led mono speciality accident and emergency ser
 ```
 #### Save the data dictionary for CollectedData to the 'RawData' folder
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE,results="hide"}
 write_csv(dictionary, here("RawData", "CollectedData_DataDictionary.csv"))
 ```
 #### Incorporating attributes as metadata to the CollectedData as metadata using the ‘incorporate_attr()’ function from the dataMeta package.
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE,results="hide"}
 main_string <- "This data describes the NHS England accident and emergency (A&E) attendances and breaches of four-hour wait time target data from the *NHSRdatasets* package collected by the data capture tool."
 
 main_string
@@ -341,7 +341,7 @@ main_string
 
 Using the ‘incorporate_attr()’ function to return an R dataset containing metadata stored in its attributes. The attributes we are going to add include: * a data dictionary * number of columns * number of rows * the name of the author who created the dictionary and added it, * the time when it was last edited * a brief description of the original dataset.
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE,results="hide"}
 complete_CollectedData <- incorporate_attr(my.data = CollectedData, data.dictionary = dictionary,
 main_string = main_string)
 
@@ -349,11 +349,14 @@ main_string = main_string)
 attributes(complete_CollectedData)$author[1]<-"B210741"
 complete_CollectedData
 ```
+
+```{r, message=FALSE,warning=FALSE,echo=FALSE, results="hide"}
 attributes(complete_CollectedData)
+```
 
 #### Save the CollectedData with attributes
 
-```{r, message=FALSE,warning=FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE,results="hide"}
 save_it(complete_CollectedData, here("RawData", "complete_CollectedData"))
 
 complete_CollectedData<-readRDS(here("RawData", "complete_CollectedData.rds"))
